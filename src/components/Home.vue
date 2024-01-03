@@ -59,10 +59,20 @@ onBeforeMount(() => {
 </script>
 
 <style lang="scss" scoped>
-.home-videos-row {
+.ep-row.home-videos-row {
+  display: grid;
+  padding: 20px 0;
+  gap: 20px;
+  grid-template-columns: repeat(6, 1fr);
+
   .bottom {
     display: flex;
     justify-content: space-between;
+  }
+
+  .ep-col-8 {
+    max-width: 250px;
+    flex: 1;
   }
 }
 </style>
