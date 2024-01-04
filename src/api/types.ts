@@ -3,3 +3,10 @@ export interface Video {
   title: string;
   info: string;
 }
+
+export interface User {
+  nickname: string;
+  user_name: string;
+  password: string;
+  password_confirm: string;
+}

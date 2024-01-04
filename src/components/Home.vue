@@ -27,6 +27,7 @@
 <script lang="ts" setup>
 import { onBeforeMount, ref } from 'vue';
 import { getVideos } from "@/api/videos";
+import { checkUserStatus } from "@/api/users"
 
 const videos = ref([]);
 
@@ -55,6 +56,10 @@ function formatTimestampToDateTime(timestamp) {
 
 onBeforeMount(() => {
   loadVideos()
+
+  checkUserStatus().then((res) => {
+    console.log('----res: ', res)
+  })
 })
 </script>
 
