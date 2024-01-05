@@ -8,13 +8,19 @@
       >
         <el-card :body-style="{ padding: '0px' }">
           <img
-            src="https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png"
+            :src="videoCover(video)"
             class="image"
           />
           <div style="padding: 14px">
-            <span>{{ video.title }}</span>
             <div class="bottom">
-              <span>{{ video.info }}</span>
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="video.info"
+                placement="top-start"
+              >
+                <span>{{ video.title }}</span>
+              </el-tooltip>
               <time class="time">{{ formatTimestampToDateTime(video.created_at) }}</time>
             </div>
           </div>
@@ -28,8 +34,10 @@
 import { onBeforeMount, ref } from 'vue';
 import { getVideos } from "@/api/videos";
 import { checkUserStatus } from "@/api/users"
+import { useUserStore } from "@/store/user"
 
 const videos = ref([]);
+const userStore = useUserStore();
 
 function loadVideos() {
   getVideos().then((res) => {
@@ -58,9 +66,15 @@ onBeforeMount(() => {
   loadVideos()
 
   checkUserStatus().then((res) => {
-    console.log('----res: ', res)
+    if (res.Code == 0) {
+      userStore.setUser(res.user)
+    }
   })
 })
+
+function videoCover(video) {
+  return video?.cover || 'https://shadow.elemecdn.com/app/element/hamburger.9cf7b091-55e9-11e9-a976-7f4d0b07eef6.png'
+}
 </script>
 
 <style lang="scss" scoped>
@@ -72,12 +86,23 @@ onBeforeMount(() => {
 
   .bottom {
     display: flex;
-    justify-content: space-between;
+
+    .ep-tooltip__trigger {
+      margin-bottom: 8px;
+    }
+
+    flex-wrap: wrap;
   }
 
   .ep-col-8 {
     max-width: 250px;
     flex: 1;
+  }
+
+  .image {
+    width: 250px;
+    height: 250px;
+    object-fit: cover;
   }
 }
 </style>

@@ -16,7 +16,7 @@ export class CosUtil {
         // 获取临时密钥
 
         let xhr = new XMLHttpRequest()
-        xhr.open('POST', 'http://localhost:5173/api/v1/upload/token', true)
+        xhr.open('POST', url, true)
         xhr.setRequestHeader('Content-Type', 'application/json')
         if (uToken) {
           xhr.setRequestHeader('Authorization', 'Bearer ' + uToken)

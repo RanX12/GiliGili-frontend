@@ -1,7 +1,7 @@
 import { createApp } from "vue";
 import App from "./App.vue";
 import Router from './router/index';
-import Store from './store/index';
+import { createPinia } from 'pinia'
 
 
 // import "~/styles/element/index.scss";
@@ -19,8 +19,9 @@ import "uno.css";
 import "element-plus/theme-chalk/src/message.scss";
 
 const app = createApp(App);
+const pinia = createPinia()
 // app.use(ElementPlus);
 app.use(Router);
-app.use(Store);
+app.use(pinia);
 
 app.mount("#app");

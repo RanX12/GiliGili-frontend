@@ -1,8 +1,8 @@
 import http from "./http";
-import type { User } from "./types";
+import type { User, UserLogin } from "./types";
 
 // 登录
-const login = async (form: { username: string, password: string }): Promise<User> => {
+const login = async (form: { user_name: string, password: string }): Promise<UserLogin> => {
   try {
     const response = await http.post('/api/v1/user/login', form);
     return response.data;
@@ -25,7 +25,7 @@ const register = async (form: { nickname: string, user_name: string, password: s
 
 const checkUserStatus = async () => {
   try {
-    const response = await http.get('/api/v1/user/check_status');
+    const response = await http.get('/api/v1/user/me');
     return response.data
   } catch (error) {
     // 处理错误

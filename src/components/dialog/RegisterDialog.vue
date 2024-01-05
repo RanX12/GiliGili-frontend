@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="registerFormVisible" title="注册">
+  <el-dialog v-model="registerFormVisible" title="注册" @closed="uiStore.hideUI('registerFormVisible')">
     <el-form
     ref="registerFormRef"
     :rules="rules"
@@ -31,7 +31,10 @@
 
 <script lang="ts" setup>
 import { reactive, ref, computed } from 'vue'
-import { useStore } from 'vuex';
+
+import { useUiStore } from '@/store/ui';
+import { useUserStore } from "@/store/user"
+
 import type { FormInstance, FormRules } from 'element-plus'
 import { register } from "@/api/users";
 
@@ -42,9 +45,10 @@ interface RegisterForm {
   password_confirm: string
 }
 
-const store = useStore();
-const registerFormVisible = computed(() => store.state.ui.registerFormVisible);
+const uiStore = useUiStore();
+const registerFormVisible = computed(() => uiStore.registerFormVisible);
 
+const userStore = useUserStore();
 
 const registerFormRef = ref<FormInstance>()
 const registerForm = reactive<RegisterForm>({
@@ -93,8 +97,8 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       register(registerForm)
         .then((res) => {
-          console.log('res ', res)
-          console.log('submit!', fields)
+          userStore.setUser(res.data)
+          uiStore.hideUI('registerFormVisible')
         })
         .catch((err) => {
           console.error('error!', err)

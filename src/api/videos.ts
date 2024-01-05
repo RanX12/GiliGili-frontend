@@ -2,7 +2,7 @@ import http from "./http";
 import type { Video } from "./types";
 
 // 假设后端接收的数据结构为 { title: string, info: string }
-const postVideo = async (form: { title: string, info: string }): Promise<Video> => {
+const postVideo = async (form: { title: string, info: string, cover: string, video_url: string }): Promise<Video> => {
   try {
     const response = await http.post('/api/v1/videos', form);
     return response.data;
