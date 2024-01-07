@@ -28,7 +28,6 @@
         >
           <img v-if="imageUrl" :src="imageUrl" class="avatar" />
           <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
-          <el-icon><Plus /></el-icon>
         </el-upload>
         <el-progress
           v-if="showPercent"
@@ -42,6 +41,7 @@
           drag
           :auto-upload="true"
           :http-request="uploadVideo"
+          accept="video/*">
         >
           <el-icon class="el-icon--upload"><upload-filled /></el-icon>
           <div class="el-upload__text">

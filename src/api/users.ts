@@ -23,7 +23,7 @@ const register = async (form: { nickname: string, user_name: string, password: s
   }
 };
 
-const checkUserStatus = async () => {
+const getCurrentUser = async () => {
   try {
     const response = await http.get('/api/v1/user/me');
     return response.data
@@ -33,4 +33,14 @@ const checkUserStatus = async () => {
   }
 }
 
-export { login, register, checkUserStatus };
+const getUserInfo = async (id: number) => {
+  try {
+    const response = await http.get(`/api/v1/user/${id}`);
+    return response.data
+  } catch (error) {
+    // 处理错误
+    throw error;
+  }
+}
+
+export { login, register, getCurrentUser, getUserInfo };

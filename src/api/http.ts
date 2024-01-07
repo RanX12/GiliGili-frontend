@@ -6,6 +6,7 @@ const http = axios.create({
     'Content-Type': 'application/json',
     // 添加任何其他需要的全局头信息
   },
+  withCredentials: true,
 });
 
 export default http;

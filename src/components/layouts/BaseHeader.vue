@@ -29,7 +29,9 @@
 </template>
 
 <script lang="ts" setup>
+import { onBeforeMount } from 'vue';
 import { toggleDark } from "~/composables";
+import { getCurrentUser } from "@/api/users"
 import { useUiStore } from '@/store/ui';
 import { useUserStore } from "@/store/user"
 import RegisterDialog from '@/components/dialog/RegisterDialog.vue';
@@ -38,6 +40,15 @@ import LoginDialog from '@/components/dialog/LoginDialog.vue';
 
 const uiStore = useUiStore();
 const userStore = useUserStore();
+
+onBeforeMount(() => {
+  getCurrentUser().then((res) => {
+    console.log('----res.code: ', res, res.code)
+    if (res.code == 0) {
+      userStore.setUser(res.data)
+    }
+  })
+})
 
 </script>
 
