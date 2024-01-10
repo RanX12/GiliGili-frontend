@@ -69,13 +69,16 @@
 </template>
 
 <script lang="ts" setup>
+import axios from 'axios';
 import { reactive, ref, onMounted } from 'vue'
 import type { FormInstance, FormRules, UploadProps } from 'element-plus'
 import { UploadFilled } from '@element-plus/icons-vue'
 import { postVideo } from "@/api/videos";
 import { uplpadTokenAPI } from "@/api/upload"
+import { uploadImage } from "@/api/freeImage"
 import { Plus } from '@element-plus/icons-vue'
 import { CosUtil } from '@/libs/cos-util'
+import { ElMessage } from 'element-plus'
 
 
 interface RuleForm {
@@ -98,9 +101,7 @@ const region = import.meta.env.VITE_TENCENT_OSS_REGION
 const bucket = import.meta.env.VITE_TENCENT_OSS_BUCKET
 const storePath = import.meta.env.VITE_TENCENT_STORE_PATH
 const cdnHost = import.meta.env.VITE_TENCENT_CDN_HOST
-const freeImageKey = import.meta.env.FREEIMAGE_API_KEY
-// const showPercent = ref(false)
-// const percent = ref(0)
+const imageApiKey = import.meta.env.VITE_IMAGE_API_KEY
 const cosUtil = ref({})
 
 
@@ -127,14 +128,16 @@ const submitForm = async (formEl: FormInstance | undefined) => {
     if (valid) {
       postVideo(ruleForm)
         .then((res) => {
-          console.log('res ', res)
-          console.log('submit!', fields)
+          ElMessage({
+            message: '投稿成功.',
+            type: 'success',
+          })
         })
         .catch((err) => {
-          console.error('error!', err)
+          ElMessage.error('投稿失败! ' + err)
         })
     } else {
-      console.log('error submit!', fields)
+      ElMessage.error('投稿失败!')
     }
   })
 }
@@ -167,45 +170,24 @@ const beforeCoverUpload: UploadProps['beforeUpload'] = (rawFile) => {
   return true
 }
 
-const upload = (params) => {
-  const formData = new FormData()
+const upload = async (params) => {
+  const file = params.file;
+  const formData = new FormData();
+  formData.append('image', file);
 
-  formData.append('File', params.file)
-  fetch(`https://freeimage.host/api/1/upload?key=${freeImageKey}`,
-    {
-      method: 'POST',
-      body: formData
-    }
-  )
-  .then((response) => response.json())
-  .then((result) => {
-    imageUrl.value = result.image.url
-    ruleForm.cover = imageUrl.value
-  })
+  try {
+    const response = await axios.post(`https://api.imgbb.com/1/upload?key=${imageApiKey}`, formData);
+    imageUrl.value = response.data.data.image.url;
+    ruleForm.cover = imageUrl.value;
+    ElMessage({
+      message: '图片上传成功.',
+      type: 'success',
+    })
+  } catch (error) {
+    ElMessage.error('Oops, error! ' + error)
+    // 处理错误
+  }
 }
-
-// const upload = (params) => {
-//   console.log('---params:', params)
-//   cosUtil.value.putCosObject({
-//     fileKey: "upload/cover/" + params.file.name,
-//     fileObject: params.file,
-//     progress: (progressData) => {
-//       percent.value = params.percent * 100;
-//     },
-//     success: (data, params) => {
-//       imageUrl.value = data.Location
-//       ruleForm.cover = imageUrl.value
-
-//       // setTimeout(() => {
-//       //   showPercent.value = false; // 隐藏进度条
-//       //   percent.value = 0; // 进度归0
-//       // }, 1000);
-//     },
-//     error: (err) => {
-//       console.log('upoad err: ', err)
-//     }
-//   })
-// }
 
 const uploadVideo = (params) => {
   cosUtil.value.putCosObject({
@@ -217,7 +199,7 @@ const uploadVideo = (params) => {
       ruleForm.video_url = data.Location
     },
     error: (err) => {
-      console.log('upoad err: ', err)
+      ElMessage.error('Oops, error! ' + err)
     }
   })
 }
