@@ -29,11 +29,11 @@
           <img v-if="imageUrl" :src="imageUrl" class="avatar" />
           <el-icon v-else class="avatar-uploader-icon"><Plus /></el-icon>
         </el-upload>
-        <el-progress
+        <!-- <el-progress
           v-if="showPercent"
           style="width: 180px"
           :percentage="percent"
-        />
+        /> -->
       </el-form-item>
       <el-form-item label="视频" prop="video_url">
         <el-upload
@@ -98,8 +98,9 @@ const region = import.meta.env.VITE_TENCENT_OSS_REGION
 const bucket = import.meta.env.VITE_TENCENT_OSS_BUCKET
 const storePath = import.meta.env.VITE_TENCENT_STORE_PATH
 const cdnHost = import.meta.env.VITE_TENCENT_CDN_HOST
-const showPercent = ref(false)
-const percent = ref(0)
+const freeImageKey = import.meta.env.FREEIMAGE_API_KEY
+// const showPercent = ref(false)
+// const percent = ref(0)
 const cosUtil = ref({})
 
 
@@ -162,32 +163,49 @@ const beforeCoverUpload: UploadProps['beforeUpload'] = (rawFile) => {
     return false
   }
 
-  showPercent.value = true
+  // showPercent.value = true
   return true
 }
 
 const upload = (params) => {
-  console.log('---params:', params)
-  cosUtil.value.putCosObject({
-    fileKey: "upload/cover/" + params.file.name,
-    fileObject: params.file,
-    progress: (progressData) => {
-      percent.value = params.percent * 100;
-    },
-    success: (data, params) => {
-      imageUrl.value = data.Location
-      ruleForm.cover = imageUrl.value
+  const formData = new FormData()
 
-      setTimeout(() => {
-        showPercent.value = false; // 隐藏进度条
-        percent.value = 0; // 进度归0
-      }, 1000);
-    },
-    error: (err) => {
-      console.log('upoad err: ', err)
+  formData.append('File', params.file)
+  fetch(`https://freeimage.host/api/1/upload?key=${freeImageKey}`,
+    {
+      method: 'POST',
+      body: formData
     }
+  )
+  .then((response) => response.json())
+  .then((result) => {
+    imageUrl.value = result.image.url
+    ruleForm.cover = imageUrl.value
   })
 }
+
+// const upload = (params) => {
+//   console.log('---params:', params)
+//   cosUtil.value.putCosObject({
+//     fileKey: "upload/cover/" + params.file.name,
+//     fileObject: params.file,
+//     progress: (progressData) => {
+//       percent.value = params.percent * 100;
+//     },
+//     success: (data, params) => {
+//       imageUrl.value = data.Location
+//       ruleForm.cover = imageUrl.value
+
+//       // setTimeout(() => {
+//       //   showPercent.value = false; // 隐藏进度条
+//       //   percent.value = 0; // 进度归0
+//       // }, 1000);
+//     },
+//     error: (err) => {
+//       console.log('upoad err: ', err)
+//     }
+//   })
+// }
 
 const uploadVideo = (params) => {
   cosUtil.value.putCosObject({
