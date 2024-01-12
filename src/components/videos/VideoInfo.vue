@@ -14,11 +14,87 @@
         <div class="comment">
           <div class="gili-comment browser-pc">
             <div class="comment-container">
-              <div class="reply-header">
+              <div class="comment-header">
                 <h3>全部评论</h3>
               </div>
-              <div class="reply-content">
-                
+              <div class="comment-content">
+                <div
+                  class="comment-list"
+                  v-for="comment in videoComments"
+                  :key="comment.id"
+                >
+                  <div class="comment">
+                    <div class="comment-sub">
+                      <a class="no-underline" href="javascript:void(0);">
+                        <el-avatar :size="50" :src="comment.user.avatar" />
+                      </a>
+                    </div>
+                    <div class="comment-primary">
+                      <div class="comment-main">
+                        <div class="user-info">
+                          <a class="no-underline" href="javascript:void(0);">
+                            <div class="user-name">
+                              <span class="name">{{ comment.user.nickname }}</span>
+                              <span class="rank">v1</span>
+                            </div>
+                          </a>
+                          <span class="address">来自广东</span>
+                        </div>
+
+                        <!-- 内容 -->
+                        <div class="content">{{ comment.content }}</div>
+                        <div class="action-box select-none">
+                          <div class="item">
+                            <el-icon><Star /></el-icon>
+                            <span>11</span>
+                          </div>
+                          <div class="item">
+                            <el-icon><ChatLineRound /></el-icon>
+                            <span>回复</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="reply-box">
+                        <div class="reply-list">
+                          <div class="comment reply" v-for="reply in comment.replies">
+                            <div class="comment-sub">
+                              <a class="no-underline" href="javascript:void(0);">
+                                <el-avatar :size="50" :src="comment.user.avatar" />
+                              </a>
+                            </div>
+                            <div class="comment-primary">
+                              <div class="comment-main">
+                                <div class="user-info">
+                                  <a class="no-underline" href="javascript:void(0);">
+                                    <div class="user-name">
+                                      <span class="name">{{ reply.user.nickname }}</span>
+                                      <span class="rank">v1</span>
+                                    </div>
+                                  </a>
+                                  <span class="address">来自广东</span>
+                                </div>
+        
+                                <!-- 内容 -->
+                                <div class="content">{{ reply.content }}</div>
+                                <div class="action-box select-none">
+                                  <div class="item">
+                                    <el-icon><Star /></el-icon>
+                                    <span>11</span>
+                                  </div>
+                                  <div class="item">
+                                    <el-icon><ChatLineRound /></el-icon>
+                                    <span>回复</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -35,6 +111,7 @@ import DPlayer from 'dplayer';
 import { useRoute } from 'vue-router';
 import { getVideo } from "@/api/videos";
 import { getVideoComment } from "@/api/comments"
+import { Star, ChatLineRound } from '@element-plus/icons-vue'
 
 const route = useRoute();
 const video = ref({});
@@ -56,12 +133,13 @@ onMounted(async () => {
     console.error('Error fetching video:', error);
   }
 
-  try {
-    videoComments.value = await getVideoComment(videoId);
-    console.log("videoComments.value: ", videoComments.value);
-  } catch (error) {
-    console.error('Error fetching video comments:', error);
-  }
+  getVideoComment(videoId)
+    .then((result) => {
+      videoComments.value = result.data;
+    })
+    .catch((err) => {
+      console.error('Error fetching video comments:', error);
+    })
 });
 
 // 将 时间戳格式化为日期：20xx-xx-xx:xx
@@ -102,8 +180,88 @@ function formatTimestamp(timestamp) {
       }
     }
 
+    .comment-container {
+      background-color: #ffffff;
+      color: #303133;
+      border-radius: 4px;
+      box-sizing: border-box;
+      padding: 0 25px 20px;
+      margin-top: 15px;
+    }
+
     .comment-m-v1 {
       margin-top: 40px;
+
+      .comment {
+        display: flex;
+        padding: 16px 0;
+
+        .gili-comment {
+          width: 100%; 
+        }
+
+        &-sub {
+
+        }
+
+        &-primary {
+          flex: 1;
+          margin-left: 16px;
+          overflow: hidden;
+        }
+
+        &-main {
+          margin-right: 12px;
+
+          .user-info {
+            display: flex;
+            align-items: center;
+
+            .user-name {
+              display: flex;
+              align-items: center;
+
+              .name {
+                max-width: 10em;
+                font-weight: 500;
+                font-size: 15px;
+                color: #303133;
+                line-height: 32px;
+                margin-right: 4px;
+              }
+            }
+
+            .address {
+              color: rgb(147, 147, 147);
+              font-size: 12px;
+            }
+          }
+
+          .action-box {
+            display: flex;
+            align-items: center;
+            position: relative;
+
+            .item {
+              display: flex;
+              align-items: center;
+              margin-right: 16px;
+              line-height: 22px;
+              font-size: 14px;
+              cursor: pointer;
+              color: #909399;
+            }
+          }
+        }
+
+        .reply-box {
+          margin-top: 16px;
+          background: #f7f7f7;
+          color: #606266;
+
+          padding: 0 25px 20px;
+        }
+      }
     }
   }
 

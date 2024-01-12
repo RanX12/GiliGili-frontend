@@ -17,6 +17,10 @@ a {
   color: var(--ep-color-primary);
 }
 
+.no-underline {
+  text-decoration: none;
+}
+
 code {
   border-radius: 2px;
   padding: 2px 4px;
