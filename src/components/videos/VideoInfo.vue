@@ -25,9 +25,11 @@
                 >
                   <div class="comment">
                     <div class="comment-sub">
-                      <a class="no-underline" href="javascript:void(0);">
-                        <el-avatar :size="50" :src="comment.user.avatar" />
-                      </a>
+                      <router-link :to="{ name: 'ChatMessage', params: { id: comment.user.id }}" target="_blank" class="gili-card_info-title">
+                        <!-- <a class="no-underline" href="javascript:void(0);"> -->
+                          <el-avatar :size="50" :src="comment.user.avatar" />
+                        <!-- </a> -->
+                      </router-link>
                     </div>
                     <div class="comment-primary">
                       <div class="comment-main">
